@@ -1,0 +1,26 @@
+apiVersion: serving.knative.dev/v1alpha1
+kind: Service
+metadata:
+  name: gitops-demo
+  namespace: default
+spec:
+  runLatest:
+    configuration:
+      build:
+        source:
+          git:
+            url: https://github.com/mchmarny/simple-app.git
+            revision: master
+        template:
+          name: kaniko
+          arguments:
+          - name: IMAGE
+            value: &image gcr.io/cf-elafros-dog/gitops-demo:latest
+      revisionTemplate:
+        spec:
+          container:
+            image: *image
+            imagePullPolicy: Always
+            env:
+            - name: SIMPLE_MSG
+              value: "Hello!"
